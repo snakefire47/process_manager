@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container-fluid">
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+        <h2 class="mb-0">TPM Reports</h2>
+        <a href="/tpm" class="btn btn-outline-secondary btn-lg">Volver a TPM</a>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-bordered align-middle text-center">
+            <thead class="table-primary">
+                <tr>
+                    <th scope="col">N. reporte</th>
+                    <th scope="col">TPM</th>
+                    <th scope="col">Fecha</th>
+                    <th scope="col">Hora</th>
+                    <th scope="col">Resp. OK</th>
+                    <th scope="col">Resp. NOK</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for report in reports %}
+                    <tr class="{% if report[5] > 0 %}table-danger{% else %}table-success{% endif %}">
+                        <td>{{ "%04d"|format(report[0]) }}</td>
+                        <td>{{ report[1] }}</td>
+                        <td>{{ report[2] }}</td>
+                        <td>{{ report[3] }}</td>
+                        <td>{{ report[4] }}</td>
+                        <td>{{ report[5] }}</td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="6" class="text-muted py-4">Aún no hay reportes TPM.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock %}

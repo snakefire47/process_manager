@@ -1,0 +1,193 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+    <div class="d-flex justify-content-between align-items-center mb-5">
+
+        <h2>Process Guide</h2>
+
+        <a id="editButton"
+           href="/recipe-editor?process={{ processes[0] if processes else '' }}"
+           class="btn btn-warning">
+
+            <i class="bi bi-pencil-square"></i>
+
+        </a>
+
+    </div>
+
+    <div class="d-flex flex-column align-items-center">
+
+        <div style="width: 550px; max-width: 90%;">
+
+            <label class="form-label">
+                Select Process
+            </label>
+
+            <div class="d-flex gap-2">
+
+                <select
+                    id="processSelect"
+                    class="form-select form-select-lg">
+
+                    {% for process in processes %}
+
+                    <option>
+                        {{ process }}
+                    </option>
+
+                    {% endfor %}
+
+                </select>
+
+                <form method="POST"
+                      action="/delete-process">
+
+                    <input
+                        type="hidden"
+                        id="deleteProcessName"
+                        name="process_name">
+
+                    <button
+                        class="btn btn-danger"
+                        type="submit">
+
+                        <i class="bi bi-trash"></i> 
+
+                    </button>
+
+                </form>
+
+            </div>
+
+            <!-- Add Process -->
+
+            <button
+                class="btn btn-primary mt-3 w-100"
+                data-bs-toggle="modal"
+                data-bs-target="#addProcessModal">
+
+                <i class="bi bi-plus-circle"></i> Add Process 
+
+            </button>
+
+        </div>
+
+        <div
+            class="d-flex justify-content-center align-items-center"
+            style="height:50vh;">
+
+		<a
+		    id="startButton"
+		    class="btn btn-success"
+		    style="
+			width:350px;
+			height:120px;
+			font-size:2rem;
+			font-weight:bold;
+			border-radius:20px;
+			display:flex;
+			justify-content:center;
+			align-items:center;
+		    ">
+		    <i class="bi bi-play-fill"></i>&nbsp;START
+		</a>
+
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- Modal -->
+
+<div
+    class="modal fade"
+    id="addProcessModal"
+    tabindex="-1">
+
+    <div class="modal-dialog">
+
+        <div class="modal-content">
+
+            <form
+                method="POST"
+                action="/add-process">
+
+                <div class="modal-header">
+
+                    <h5 class="modal-title">
+                        Add Process
+                    </h5>
+
+                </div>
+
+                <div class="modal-body">
+
+                    <input
+                        type="text"
+                        name="process_name"
+                        class="form-control"
+                    type="submit"
+                        class="btn btn-primary">
+
+                        Create
+
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+const processSelect =
+    document.getElementById("processSelect");
+
+const editButton =
+    document.getElementById("editButton");
+
+const deleteInput =
+    document.getElementById("deleteProcessName");
+
+const startButton =
+    document.getElementById("startButton");
+
+function updateSelection() {
+
+    const selected =
+        processSelect.value;
+
+    editButton.href =
+        "/recipe-editor?process=" +
+        encodeURIComponent(selected);
+
+    startButton.href =
+        "/player?process=" +
+        encodeURIComponent(selected);
+
+    deleteInput.value =
+        selected;
+}
+
+updateSelection();
+
+processSelect.addEventListener(
+    "change",
+    updateSelection
+);
+
+</script>
+
+
+{% endblock %}
+

@@ -1,0 +1,380 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container-fluid text-center" style="height:90vh;">
+
+    <h5 class="mt-2">
+        {{ recipe.process }}
+    </h5>
+
+    <h3 id="stepCount" style="margin-bottom:5px;">
+        Step 1 of {{ recipe.steps|length }}
+    </h3>
+
+    <h1
+        id="stepTitle"
+        class="mb-4"
+        style="
+            font-size:3rem;
+            font-weight:bold;
+	    margin:0;
+	    padding:0;
+        ">
+    </h1>
+
+    <!-- MEDIA + TIMER -->
+
+    <div class="d-flex justify-content-center">
+
+        <div
+            style="
+                position:relative;
+                width:1000px;
+                max-width:95%;
+                height:550px;
+            ">
+
+            <div
+                id="mediaContainer"
+                style="
+                    width:100%;
+                    height:100%;
+                    display:flex;
+                    justify-content:center;
+                    align-items:top;
+                ">
+            </div>
+  <!--pause -->
+
+	
+<div
+    style="
+        position:absolute;
+        left:20px;
+        top:50%;
+        transform:translateY(-50%);
+        display:flex;
+        flex-direction:column;
+        gap:20px;
+        z-index:100;
+    ">
+
+    <button
+        id="pauseButton"
+        class="control-btn pause-btn">
+
+        <i class="bi bi-pause-fill"></i>
+        <span>Pause</span>
+
+    </button>
+
+    <button
+        id="nextButton"
+        class="control-btn next-btn">
+
+        <i class="bi bi-skip-forward-fill"></i>
+        <span>Next Step</span>
+
+    </button>
+
+</div>
+            <!-- TIMER OVERLAY -->
+
+            <div
+                style="
+                    position:absolute;
+                    top:50%;
+                    right:20px;
+                    transform:translateY(-50%);
+                    z-index:100;
+                ">
+
+                <div
+                    class="position-relative"
+                    style="
+                        width:280px;
+                        height:280px;
+                        border-radius:50%;
+                        backdrop-filter:blur(4px);
+                    ">
+
+                    <svg
+                        width="280"
+                        height="280">
+
+                        <circle
+                            cx="140"
+                            cy="140"
+                            r="110"
+                            stroke="rgba(255,255,255,0.3)"
+                            stroke-width="15"
+                            fill="rgba(0,0,0,0.25)"/>
+
+                        <circle
+                            id="progressCircle"
+                            cx="140"
+                            cy="140"
+                            r="110"
+                            stroke="#0d6efd"
+                            stroke-width="15"
+                            fill="none"
+                            stroke-linecap="round"
+                            transform="rotate(-90 140 140)"
+                            stroke-dasharray="691"
+                            stroke-dashoffset="0"/>
+
+                    </svg>
+
+                    <div
+                        class="position-absolute top-50 start-50 translate-middle">
+
+                        <div
+                            id="timer"
+                            style="
+                                color:white;
+                                font-size:5rem;
+                                font-weight:bold;
+                                text-shadow:
+                                    2px 2px 10px black;
+                            ">
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+const recipe = {{ recipe|tojson }};
+
+let currentStep = 0;
+let timerInterval = null;
+
+let paused = false;
+let remainingTime = 0;
+let currentDuration = 0;
+
+function loadStep(index) {
+    const step = recipe.steps[index];
+    fetch("/blink-step");
+    document.getElementById("stepTitle").textContent = step.title;
+    document.getElementById("stepCount").textContent = `Step ${index + 1} of ${recipe.steps.length}`;
+
+    const mediaContainer = document.getElementById("mediaContainer");
+    mediaContainer.innerHTML = "";
+
+    if (step.media) {
+        const lower = step.media.toLowerCase();
+
+        // Check for video extensions
+        if (
+            lower.endsWith(".mp4") ||
+            lower.endsWith(".webm") ||
+            lower.endsWith(".mov")
+        ) {
+            // Added proper <video> tag with controls and autoplay
+            mediaContainer.innerHTML = `
+                <video src="/static/media/${step.media}" autoplay muted loop style="max-width:100%; max-height:250px;"></video>
+            `;
+        } else {
+            // Added proper <img> tag for images
+            mediaContainer.innerHTML = `
+                <img src="/static/media/${step.media}" style="max-width:100%; max-height:250px; object-fit:contain;" />
+            `;
+        }
+    } else {
+        mediaContainer.innerHTML = `
+            <h4 class="text-muted">
+                No media assigned
+            </h4>
+        `;
+    }
+
+    startTimer(step.time);
+}
+
+function processFinished() {
+fetch("/process-complete");
+    document.body.innerHTML = `
+        <div style="
+            height:100vh;
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            flex-direction:column;
+        ">
+            <h1>
+                ✔ PROCESS COMPLETE
+            </h1>
+        </div>
+    `;
+
+    setTimeout(() => {
+
+        window.location = "/process";
+
+    }, 1000);
+
+}
+
+function startTimer(duration) {
+
+    if (timerInterval) {
+        clearInterval(timerInterval);
+    }
+
+    currentDuration = duration;
+
+    if (!paused) {
+        remainingTime = duration;
+    }
+
+    const timer =
+        document.getElementById("timer");
+
+    const circle =
+        document.getElementById("progressCircle");
+
+    const circumference = 754;
+
+    timerInterval = setInterval(() => {
+
+        timer.textContent = remainingTime;
+
+        const percent =
+            remainingTime / currentDuration;
+
+        circle.style.strokeDashoffset =
+            circumference * (1 - percent);
+
+        if (remainingTime <= 5) {
+
+            circle.style.stroke = "red";
+
+        } else if (remainingTime <= 10) {
+
+            circle.style.stroke = "orange";
+
+        } else {
+
+            circle.style.stroke = "#0d6efd";
+
+        }
+
+        remainingTime--;
+
+        if (remainingTime < 0) {
+
+            clearInterval(timerInterval);
+
+            currentStep++;
+
+            if (currentStep < recipe.steps.length) {
+
+                paused = false;
+
+                document.getElementById(
+                    "pauseButton"
+                ).innerHTML =
+                    "⏸ Pause";
+
+                loadStep(currentStep);
+
+            } else {
+
+                processFinished();
+
+            }
+
+        }
+
+    }, 1000);
+
+}
+
+document
+    .getElementById("pauseButton")
+    .addEventListener("click", () => {
+
+        const button =
+            document.getElementById(
+                "pauseButton"
+            );
+
+        if (!paused) {
+
+            clearInterval(
+                timerInterval
+            );
+
+            paused = true;
+
+            button.innerHTML =
+                "▶ Resume";
+
+        } else {
+
+            paused = false;
+
+            button.innerHTML =
+                "⏸ Pause";
+
+            startTimer(
+                remainingTime
+            );
+
+        }
+
+    });
+
+document
+    .getElementById("nextButton")
+    .addEventListener("click", () => {
+
+        clearInterval(
+            timerInterval
+        );
+
+        currentStep++;
+
+        paused = false;
+
+        document.getElementById(
+            "pauseButton"
+        ).innerHTML =
+            "⏸ Pause";
+
+        if (
+            currentStep <
+            recipe.steps.length
+        ) {
+
+            loadStep(
+                currentStep
+            );
+
+        } else {
+
+            processFinished();
+
+        }
+
+    });
+
+if (recipe.steps.length > 0) {
+
+    loadStep(0);
+
+}
+
+</script>
+{% endblock %}

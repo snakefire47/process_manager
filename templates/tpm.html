@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container-fluid h-100" style="min-height: 100vh; display: flex; align-items: center;">
+    <div class="row w-100 h-100" style="align-items: center;">
+        
+        <!-- Left Side -->
+        <div class="col-md-6 d-flex flex-column justify-content-center" style="padding-left: 60px;">
+            <div>
+                <h4 style="font-size: 1.25rem; margin-bottom: 12px;">Ultimo TPM realizado:</h4>
+                {% if latest_report %}
+                    <p class="mb-4 fs-5">{{ latest_report[0] }} - {{ latest_report[1] }}</p>
+                {% else %}
+                    <p class="mb-4 text-muted">Sin registros</p>
+                {% endif %}
+                
+                <a
+                    href="/tpm/reports"
+                    class="btn btn-primary w-100"
+                    style="
+                        padding: 12px 20px;
+                        font-size: 1.1rem;
+                        margin-bottom: 15px;
+                        border-radius: 5px;
+                    ">
+                    TPM Reports
+                </a>
+
+                <a
+                    href="/tpm/download-report"
+                    class="btn btn-secondary w-100"
+                    style="
+                        padding: 12px 20px;
+                        font-size: 1.1rem;
+                        border-radius: 5px;
+                    ">
+                    Download Report
+                </a>
+            </div>
+        </div>
+
+        <!-- Right Side -->
+        <div class="col-md-6 d-flex justify-content-center" style="padding-right: 60px;">
+            <a 
+                href="/tpm-molino-2"
+                class="btn btn-primary"
+                style="
+                    width: 180px;
+                    height: 400px;
+                    font-size: 1.5rem;
+                    font-weight: bold;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    border-radius: 10px;
+                    text-decoration: none;
+                    color: white;
+                ">
+                TPM Molino 2
+            </a>
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}

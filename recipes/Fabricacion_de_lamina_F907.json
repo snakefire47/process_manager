@@ -1,0 +1,50 @@
+{
+    "process": "Fabricación de lamina F907",
+    "steps": [
+        {
+            "title": "Colocate el Equipo de protección personal necesario",
+            "time": 10,
+            "media": "EPP.png"
+        },
+        {
+            "title": "Asegurate de que molino este encendido",
+            "time": 5,
+            "media": "Paso_2.png"
+        },
+        {
+            "title": "Abre las llaves de Agua de molino y Mesa de Enfriamiento debe encender luz verde",
+            "time": 5,
+            "media": "Paso_3.png"
+        },
+        {
+            "title": "Revision critica de proceso: Realiza TPM (Mantenimiento Preventivo Total)",
+            "time": 250,
+            "media": "paso_4.png"
+        },
+        {
+            "title": "Revision critica de proceso: Trasladar material del Skip a molino ",
+            "time": 10,
+            "media": "Paso_5.png"
+        },
+        {
+            "title": "Revision Critica de Proceso: Integra el hule a molino, hacer banda ",
+            "time": 30,
+            "media": "Paso_6.png"
+        },
+        {
+            "title": "Revision Critica de Proceso: Ajusta apertura de rodillos y Corta para hacer blender ",
+            "time": 15,
+            "media": "paso_7.png"
+        },
+        {
+            "title": "Revision Critica de proceso: Realiza blender, Asegurate de usar carro y temporizador 120 sec",
+            "time": 120,
+            "media": "Paso_8.png"
+        },
+        {
+            "title": "Revision Critica de proceso: Con el uso de herramientas realiza el corte de muestras para Laboratorio",
+            "time": 15,
+            "media": "paso_9.png"
+        }
+    ]
+}

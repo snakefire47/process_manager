@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<style>
+	/* Fade-in animation */
+	.fade-in {
+    	opacity: 0;
+    	transform: translateY(20px);
+    	animation: fadeIn 1.5s ease forwards;
+	}
+
+	@keyframes fadeIn {
+    	to {
+        	opacity: 1;
+        	transform: translateY(0);
+    	}
+	}
+
+	/* Brand-like styling */
+	.brand-text {
+    	color: #005baa; /* Freudenberg-like blue */
+    	font-weight: 500;
+    	letter-spacing: 1px;
+	}
+
+	.subtext {
+    	color: #6c757d;
+    	font-size: 1rem;
+	}
+</style>
+
+<div class="d-flex flex-column justify-content-between align-items-center"
+ 	style="height: 85vh; padding: 30px;">
+
+	<!-- Centered Logo with animation -->
+	<div class="d-flex justify-content-center align-items-center w-100 fade-in"
+     	style="flex-grow: 1;">
+
+    	<img src="{{ url_for('static', filename='images/freudenberg_logo.png') }}"
+         	style="max-width: 650px; width: 90%;" alt="Freudenberg Logo">
+
+	</div>
+
+	<!-- Bottom Info Section -->
+	<div class="text-center" style="width: 100%; padding-bottom: 20px;">
+
+    	<p class="brand-text" style="margin: 5px;">
+        	PROCESS MANAGER SYSTEM
+    	</p>
+
+    	<p class="subtext" style="margin: 5px;">
+        	Developed by: Alfredo García
+    	</p>
+
+    	<p class="subtext" style="margin: 5px;">
+        	Build for: Freudenberg-NOK Rubber Mixing
+    	</p>
+
+	</div>
+
+</div>
+
+{% endblock %}
+

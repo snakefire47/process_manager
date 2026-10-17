@@ -1,0 +1,15 @@
+{
+    "process": "F585",
+    "steps": [
+        {
+            "title": "Blender",
+            "time": 5,
+            "media": "Captura_de_pantalla_2026-03-18_175820.png"
+        },
+        {
+            "title": "Paso 2",
+            "time": 7,
+            "media": "Captura_de_pantalla_2026-03-18_165340.png"
+        }
+    ]
+}

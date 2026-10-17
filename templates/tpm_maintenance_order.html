@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container py-5">
+    <div class="mx-auto" style="max-width: 620px;">
+        <h2 class="text-danger mb-4">Avisar a supervisor y/o mantenimiento</h2>
+
+        {% if form_error %}
+            <div class="alert alert-danger" role="alert">{{ form_error }}</div>
+        {% endif %}
+
+        <form method="post" action="/tpm/maintenance-order">
+            <input type="hidden" name="report_number" value="{{ report_number }}">
+            <label for="maintenance-order" class="form-label fw-semibold">
+                Ingresar orden de mantenimiento
+            </label>
+            <input
+                id="maintenance-order"
+                name="maintenance_order"
+                type="text"
+                class="form-control form-control-lg mb-4"
+                maxlength="120"
+                autocomplete="off"
+                autofocus>
+            <button type="submit" class="btn btn-success btn-lg px-5">OK</button>
+        </form>
+    </div>
+</div>
+
+{% endblock %}

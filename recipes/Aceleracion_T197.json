@@ -1,0 +1,10 @@
+{
+    "process": "Aceleración T197",
+    "steps": [
+        {
+            "title": "Step one",
+            "time": 20,
+            "media": "videoplayback.mp4"
+        }
+    ]
+}

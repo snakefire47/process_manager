@@ -1,0 +1,293 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+{% macro status_options(name, item_label) %}
+    <div class="tpm-status-options" role="radiogroup" aria-label="Estado: {{ item_label }}">
+        <label class="tpm-choice tpm-choice-ok" for="{{ name }}-ok">
+            <input id="{{ name }}-ok" type="radio" name="{{ name }}" value="OK"
+                   {% if selected_statuses.get(name) == 'OK' %}checked{% endif %} required>
+            <span>OK</span>
+        </label>
+        <label class="tpm-choice tpm-choice-not-ok" for="{{ name }}-not-ok">
+            <input id="{{ name }}-not-ok" type="radio" name="{{ name }}" value="Not OK"
+                   {% if selected_statuses.get(name) == 'Not OK' %}checked{% endif %} required>
+            <span>Not OK</span>
+        </label>
+    </div>
+{% endmacro %}
+
+{% macro step_images(step) %}
+    <div class="tpm-step-images">
+        <img src="{{ url_for('static', filename='images/TPM/M2TPM_' ~ step ~ '.png') }}"
+             alt="Imagen de referencia del paso {{ step }}"
+             loading="lazy">
+        {% if step == 8 or step == 12 %}
+            <img src="{{ url_for('static', filename='images/TPM/M2TPM_' ~ step ~ '.1.png') }}"
+                 alt="Imagen adicional de referencia del paso {{ step }}"
+                 loading="lazy">
+        {% endif %}
+    </div>
+{% endmacro %}
+
+<style>
+    .tpm-page-controls {
+        position: fixed;
+        top: 50%;
+        right: max(0.75rem, env(safe-area-inset-right));
+        z-index: 1030;
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+        transform: translateY(-50%);
+    }
+
+    .tpm-page-controls button {
+        display: flex;
+        width: 4.5rem;
+        height: 4.5rem;
+        align-items: center;
+        justify-content: center;
+        border: 2px solid #fff;
+        border-radius: 1rem;
+        background: #212529;
+        color: #fff;
+        box-shadow: 0 0.25rem 0.75rem rgb(0 0 0 / 25%);
+        font-size: 2rem;
+        touch-action: manipulation;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    .tpm-page-controls button:active {
+        background: #495057;
+        transform: scale(0.96);
+    }
+
+    .tpm-page-controls button:focus-visible {
+        outline: 3px solid #0d6efd;
+        outline-offset: 3px;
+    }
+
+    .tpm-step-images {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        min-width: 180px;
+    }
+
+    .tpm-step-images img {
+        display: block;
+        width: min(100%, 180px);
+        max-height: 140px;
+        object-fit: contain;
+        border-radius: 0.375rem;
+    }
+
+    .tpm-status-options {
+        display: flex;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+
+    .tpm-choice {
+        display: flex;
+        flex: 1;
+        min-width: 76px;
+        min-height: 64px;
+        align-items: center;
+        justify-content: center;
+        gap: 0.45rem;
+        padding: 0.5rem;
+        border: 2px solid #adb5bd;
+        border-radius: 0.75rem;
+        background: #fff;
+        cursor: pointer;
+        font-size: 1rem;
+        font-weight: 700;
+        user-select: none;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    .tpm-choice input {
+        width: 1.5rem;
+        height: 1.5rem;
+        margin: 0;
+        flex: 0 0 auto;
+        accent-color: #198754;
+    }
+
+    .tpm-choice-not-ok input {
+        accent-color: #dc3545;
+    }
+
+    .tpm-choice:has(input:checked) {
+        border-color: #198754;
+        background: #d1e7dd;
+    }
+
+    .tpm-choice-not-ok:has(input:checked) {
+        border-color: #dc3545;
+        background: #f8d7da;
+    }
+
+    .tpm-choice:focus-within {
+        outline: 3px solid #0d6efd;
+        outline-offset: 2px;
+    }
+
+    @media (max-width: 767.98px) {
+        .tpm-status-options {
+            justify-content: flex-start;
+        }
+
+        .tpm-choice {
+            min-height: 60px;
+        }
+    }
+</style>
+
+<nav class="tpm-page-controls" aria-label="Controles para desplazarse por la página">
+    <button type="button" id="tpm-scroll-up" aria-label="Subir en la página" title="Subir">
+        <i class="bi bi-arrow-up" aria-hidden="true"></i>
+    </button>
+    <button type="button" id="tpm-scroll-down" aria-label="Bajar en la página" title="Bajar">
+        <i class="bi bi-arrow-down" aria-hidden="true"></i>
+    </button>
+</nav>
+
+<div class="container">
+    <h2 class="mb-4">TPM Molino 2</h2>
+
+    {% if form_error %}
+        <div class="alert alert-danger" role="alert">{{ form_error }}</div>
+    {% endif %}
+
+    <form method="post" aria-label="Checklist TPM Molino 2">
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped align-middle">
+                <thead class="table-dark">
+                    <tr>
+                        <th scope="col">Punto de revisión</th>
+                        <th scope="col" style="width: 380px;">Imagen de referencia</th>
+                        <th scope="col" style="width: 220px;">Estado</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <div class="form-label fw-semibold mb-1">
+                                Paros de emergencia (12 paros en total) en buen estado, sin daños visibles
+                            </div>
+                            <div class="text-muted small">
+                                Presionar el paro de emergencia y verificar que la máquina no realice ningún movimiento.
+                            </div>
+                        </td>
+                        <td>{{ step_images(1) }}</td>
+                        <td>
+                            {{ status_options('item_1', 'paros de emergencia') }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="form-label fw-semibold mb-1">
+                                Barra de emergencia en buen estado, sin daños visibles y libre de polvo
+                            </div>
+                            <div class="text-muted small">
+                                Presionar la barra de emergencia y verificar que la máquina no realice ningún movimiento.
+                                La máquina debe parar sin tener que aplicar una fuerza mayor a 40 lb.
+                            </div>
+                        </td>
+                        <td>{{ step_images(2) }}</td>
+                        <td>
+                            {{ status_options('item_2', 'barra de emergencia') }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><div class="form-label mb-0">Bases de cuchillas libres de daños visibles</div></td>
+                        <td>{{ step_images(3) }}</td>
+                        <td>{{ status_options('item_3', 'bases de cuchillas') }}</td>
+                    </tr>
+                    <tr>
+                        <td><div class="form-label mb-0">Balatas en buen estado, sin daños visibles o apertura anormal</div></td>
+                        <td>{{ step_images(4) }}</td>
+                        <td>{{ status_options('item_4', 'balatas') }}</td>
+                    </tr>
+                    <tr>
+                        <td><div class="form-label mb-0">Motor en buen estado, sin daños, ruidos extraños y libre de polvo</div></td>
+                        <td>{{ step_images(5) }}</td>
+                        <td>{{ status_options('item_5', 'motor') }}</td>
+                    </tr>
+                    <tr>
+                        <td><div class="form-label mb-0">Llave hidroneumática en buen estado, sin daños visibles y libre de polvo</div></td>
+                        <td>{{ step_images(6) }}</td>
+                        <td>{{ status_options('item_6', 'llave hidroneumática') }}</td>
+                    </tr>
+                    <tr>
+                        <td><div class="form-label mb-0">Panel de control en buen estado, sin daños visibles y libre de polvo</div></td>
+                        <td>{{ step_images(7) }}</td>
+                        <td>{{ status_options('item_7', 'panel de control') }}</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="form-label mb-1">Medidor de temperatura de agua en buen estado, sin daños visibles y libre de polvo</div>
+                            <div class="form-label mb-0">Verificar que la luz se encuentre en color verde</div>
+                        </td>
+                        <td>{{ step_images(8) }}</td>
+                        <td>{{ status_options('item_8', 'medidor de temperatura de agua y luz indicadora') }}</td>
+                    </tr>
+                    <tr>
+                        <td><div class="form-label mb-0">Rodillos en buen estado, sin daños visibles y libre de polvo</div></td>
+                        <td>{{ step_images(9) }}</td>
+                        <td>{{ status_options('item_9', 'rodillos') }}</td>
+                    </tr>
+                    <tr>
+                        <td><div class="form-label mb-0">Distancia de paro menor o igual a la distancia calculada</div></td>
+                        <td>{{ step_images(10) }}</td>
+                        <td>{{ status_options('item_10', 'distancia de paro') }}</td>
+                    </tr>
+                    <tr>
+                        <td><div class="form-label mb-0">Cilindros de apertura en buen estado, sin daños, ruidos extraños o fugas de aceite</div></td>
+                        <td>{{ step_images(11) }}</td>
+                        <td>{{ status_options('item_11', 'cilindros de apertura') }}</td>
+                    </tr>
+                    <tr>
+                        <td><div class="form-label mb-0">Niveles de aceite por arriba de la marca roja. Revisar que no existan fugas de aceite</div></td>
+                        <td>{{ step_images(12) }}</td>
+                        <td>{{ status_options('item_12', 'niveles de aceite') }}</td>
+                    </tr>
+                    <tr>
+                        <td><div class="form-label mb-0">Medición de la temperatura de mesa de enfriamiento de 15° a 25°</div></td>
+                        <td>{{ step_images(13) }}</td>
+                        <td>{{ status_options('item_13', 'temperatura de mesa de enfriamiento') }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="d-flex justify-content-center my-4">
+            <button type="submit" class="btn btn-success btn-lg px-5 py-3 fw-bold">
+                Enviar
+            </button>
+        </div>
+    </form>
+</div>
+
+<script>
+    const tpmScrollPage = (direction) => {
+        const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        window.scrollBy({
+            top: direction * Math.round(window.innerHeight * 0.8),
+            behavior: reducedMotion ? "auto" : "smooth"
+        });
+    };
+
+    document.getElementById("tpm-scroll-up").addEventListener("click", () => {
+        tpmScrollPage(-1);
+    });
+
+    document.getElementById("tpm-scroll-down").addEventListener("click", () => {
+        tpmScrollPage(1);
+    });
+</script>
+
+{% endblock %}

@@ -1,0 +1,213 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container">
+
+    <div class="d-flex justify-content-between mb-4">
+
+        <h2>Recipe Editor</h2>
+
+        <a href="/process" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Back 
+        </a>
+
+    </div>
+
+    <h4 class="mb-4">
+        Process: {{ process }}
+    </h4>
+
+    <form method="POST" enctype="multipart/form-data" id="recipeForm">
+
+        <div id="stepsContainer">
+
+            {% for step in recipe.steps %}
+
+            <div class="card p-4 mb-3 step-card">
+
+                <div class="d-flex justify-content-between">
+
+                    <h5>
+                        Step {{ loop.index }}
+                    </h5>
+
+                    <button
+                        type="button"
+                        class="btn btn-danger btn-sm"
+                        onclick="removeStep(this)">
+                        <i class="bi bi-trash"></i> 
+                    </button>
+
+                </div>
+
+                <label class="form-label mt-3">
+                    Title
+                </label>
+
+                <input
+                    type="text"
+                    name="title"
+                    class="form-control"
+                    value="{{ step.title }}"
+                    required>
+
+                <label class="form-label mt-3">
+                    Time (seconds)
+                </label>
+
+                <input
+                    type="number"
+                    name="time"
+                    class="form-control"
+                    value="{{ step.time }}"
+                    required>
+
+		<label class="form-label mt-3">
+		    Media File
+		</label>
+
+		<input
+		    type="file"
+		    name="media{{ loop.index0 }}"
+		    class="form-control">
+
+		{% if step.media %}
+
+		<div class="mt-2 text-muted">
+		    Current File: {{ step.media }}
+{% if step.media.endswith('.jpg')
+   or step.media.endswith('.png')
+   or step.media.endswith('.jpeg') %}
+
+<img
+    src="{{ url_for('static', filename='media/' + step.media) }}"
+    class="img-fluid mt-2"
+    style="max-height:200px;">
+
+{% endif %}
+
+		</div>
+
+		{% endif %}
+
+
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+        <button
+            type="button"
+            class="btn btn-primary btn-lg mt-3"
+            onclick="addStep()">
+
+            <i class="bi bi-plus-circle"></i> Add Step 
+
+        </button>
+
+        <button
+            type="submit"
+            class="btn btn-success btn-lg mt-3">
+
+            Save Recipe
+
+        </button>
+
+    </form>
+
+</div>
+
+<script>
+
+function addStep() {
+
+    const container =
+        document.getElementById("stepsContainer");
+
+    const stepNumber =
+        container.children.length + 1;
+
+    const step = document.createElement("div");
+
+    step.className =
+        "card p-4 mb-3 step-card";
+
+    step.innerHTML = `
+    
+        <div class="d-flex justify-content-between">
+
+            <h5>
+                Step ${stepNumber}
+            </h5>
+
+            <button
+                type="button"
+                class="btn btn-danger btn-sm"
+                onclick="removeStep(this)">
+                <i class="bi bi-trash"></i> 
+            </button>
+
+        </div>
+
+        <label class="form-label mt-3">
+            Title
+        </label>
+
+        <input
+            type="text"
+            name="title"
+            class="form-control"
+            required>
+
+        <label class="form-label mt-3">
+            Time (seconds)
+        </label>
+
+        <input
+            type="number"
+            name="time"
+            class="form-control"
+            value="0"
+            required>
+	<label class="form-label mt-3">
+	Media File
+	</label>
+
+	<input
+	type="file"
+	name="mediaNEW"
+	class="form-control">
+
+    `;
+
+    container.appendChild(step);
+}
+
+function removeStep(button) {
+
+    button.closest(".step-card").remove();
+
+    renumberSteps();
+}
+
+function renumberSteps() {
+
+	const cards =
+    	document.querySelectorAll(".step-card");
+
+	cards.forEach((card, index) => {
+
+    	card.querySelector("h5").textContent =
+        	`Step ${index + 1}`;
+
+	});
+
+}
+
+
+</script>
+
+{% endblock %}
