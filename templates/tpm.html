@@ -8,12 +8,19 @@
         <!-- Left Side -->
         <div class="col-md-6 d-flex flex-column justify-content-center" style="padding-left: 60px;">
             <div>
-                <h4 style="font-size: 1.25rem; margin-bottom: 12px;">Ultimo TPM realizado:</h4>
-                {% if latest_report %}
-                    <p class="mb-4 fs-5">{{ latest_report[0] }} - {{ latest_report[1] }}</p>
-                {% else %}
-                    <p class="mb-4 text-muted">Sin registros</p>
-                {% endif %}
+                {% for mill in range(1, 4) %}
+                    <h4 style="font-size: 1.25rem; margin-bottom: 12px;">
+                        Ultimo TPM realizado Molino {{ mill }}:
+                    </h4>
+                    {% if latest_reports.get('Molino ' ~ mill) %}
+                        <p class="mb-4 fs-5">
+                            {{ latest_reports.get('Molino ' ~ mill)[0] }} -
+                            {{ latest_reports.get('Molino ' ~ mill)[1] }}
+                        </p>
+                    {% else %}
+                        <p class="mb-4 text-muted">Sin registros</p>
+                    {% endif %}
+                {% endfor %}
                 
                 <a
                     href="/tpm/reports"
@@ -40,25 +47,16 @@
             </div>
         </div>
 
-        <!-- Right Side -->
+        <!-- TPM checklists -->
         <div class="col-md-6 d-flex justify-content-center" style="padding-right: 60px;">
-            <a 
-                href="/tpm-molino-2"
-                class="btn btn-primary"
-                style="
-                    width: 180px;
-                    height: 400px;
-                    font-size: 1.5rem;
-                    font-weight: bold;
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
-                    border-radius: 10px;
-                    text-decoration: none;
-                    color: white;
-                ">
-                TPM Molino 2
-            </a>
+            <div class="d-grid gap-3 w-100" style="max-width: 360px;">
+                {% for mill in range(1, 4) %}
+                    <a href="{{ url_for('tpm_molino', mill=mill) }}"
+                       class="btn btn-primary py-3 fs-5 fw-bold">
+                        TPM Molino {{ mill }}
+                    </a>
+                {% endfor %}
+            </div>
         </div>
 
     </div>

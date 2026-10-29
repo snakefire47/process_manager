@@ -1,0 +1,95 @@
+[
+    {
+        "description": "Paros de emergencia (12 paros en total) en buen estado, sin daños visibles",
+        "details": "Presionar el paro de emergencia y verificar que la máquina no realice ningún movimiento.",
+        "images": [
+            "M2TPM_1.png"
+        ]
+    },
+    {
+        "description": "Barra de emergencia en buen estado, sin daños visibles y libre de polvo",
+        "details": "Presionar la barra de emergencia y verificar que la máquina no realice ningún movimiento. La máquina debe parar sin tener que aplicar una fuerza mayor a 40 lb.",
+        "images": [
+            "M2TPM_2.png"
+        ]
+    },
+    {
+        "description": "Bases de cuchillas libres de daños visibles",
+        "details": "",
+        "images": [
+            "M2TPM_3.png"
+        ]
+    },
+    {
+        "description": "Balatas en buen estado, sin daños visibles o apertura anormal",
+        "details": "",
+        "images": [
+            "M2TPM_4.png"
+        ]
+    },
+    {
+        "description": "Motor en buen estado, sin daños, ruidos extraños y libre de polvo",
+        "details": "",
+        "images": [
+            "M2TPM_5.png"
+        ]
+    },
+    {
+        "description": "Llave hidroneumática en buen estado, sin daños visibles y libre de polvo",
+        "details": "",
+        "images": [
+            "M2TPM_6.png"
+        ]
+    },
+    {
+        "description": "Panel de control en buen estado, sin daños visibles y libre de polvo",
+        "details": "",
+        "images": [
+            "M2TPM_7.png"
+        ]
+    },
+    {
+        "description": "Medidor de temperatura de agua en buen estado, sin daños visibles y libre de polvo",
+        "details": "Verificar que la luz se encuentre en color verde",
+        "images": [
+            "M2TPM_8.png",
+            "M2TPM_8.1.png"
+        ]
+    },
+    {
+        "description": "Rodillos en buen estado, sin daños visibles y libre de polvo",
+        "details": "",
+        "images": [
+            "M2TPM_9.png"
+        ]
+    },
+    {
+        "description": "Distancia de paro menor o igual a la distancia calculada",
+        "details": "",
+        "images": [
+            "M2TPM_10.png"
+        ]
+    },
+    {
+        "description": "Cilindros de apertura en buen estado, sin daños, ruidos extraños o fugas de aceite",
+        "details": "",
+        "images": [
+            "M2TPM_11.png"
+        ]
+    },
+    {
+        "description": "Niveles de aceite por arriba de la marca roja. Revisar que no existan fugas de aceite",
+        "details": "",
+        "images": [
+            "M2TPM_12.png",
+            "M2TPM_12.1.png"
+        ]
+    },
+    {
+        "description": "Medición de la temperatura de mesa de enfriamiento de 15° a 25°",
+        "details": "",
+        "images": [
+            "M2TPM_13.png"
+        ]
+    }
+]

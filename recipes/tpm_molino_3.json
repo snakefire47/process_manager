@@ -1,0 +1,86 @@
+[
+    {
+        "description": "Paros de emergencia (8 paros en total)  en buen estado, sin daños visibles",
+        "details": "Presionar el paro de emergencia y verificar que la maquina no realice ningún movimiento",
+        "images": [
+            "m3_082b0bc600d7458da255d9fbb5ebbdac.jpg"
+        ]
+    },
+    {
+        "description": "Barra de emergencia  en buen estado, sin daños visibles y libre de polvo",
+        "details": "Presionar la barra de emergencia y verificar que la maquina no realice ningún movimiento, la maquina debe parar sin tener que aplicar una fuerza mayor a 40 lb",
+        "images": [
+            "m3_1545a0f6214043b6925818ae7ea34f57.jpg"
+        ]
+    },
+    {
+        "description": "Distancia de paro",
+        "details": "verificar distancia de paro sea menor o igual a la calculada",
+        "images": [
+            "m3_1de1a2f6b75540c29f4d1d5d3bca70e2.jpg"
+        ]
+    },
+    {
+        "description": "Balatas en buen estado",
+        "details": "sin daños visibles y guarda colocada.",
+        "images": [
+            "m3_3564e917a2d2484e99baf2196d446443.jpg"
+        ]
+    },
+    {
+        "description": "Motor en buen estado",
+        "details": "sin daños, ruidos extraños y libre de polvo",
+        "images": [
+            "m3_d56790b9395149778c97b4dbc58ce1e9.jpg"
+        ]
+    },
+    {
+        "description": "Panel de control en buen estado, sin daños visibles",
+        "details": "",
+        "images": [
+            "m3_2032dd58441242c882be47798f41fb21.jpg"
+        ]
+    },
+    {
+        "description": "Medidor de temperatura de agua  en buen estado",
+        "details": "sin daños visibles y libre de polvo\r\nVerificar que la luz se encuentre en color verde",
+        "images": [
+            "m3_b0b04564e1e644a9ad23f70ebf77902a.jpg"
+        ]
+    },
+    {
+        "description": "Rodillos en buen estado, sin daños visibles y libre de polvo",
+        "details": "",
+        "images": [
+            "m3_a43b83a38f2f432d938afeb58249857e.jpg"
+        ]
+    },
+    {
+        "description": "Linea de vida revisar que se encuentre en buen estado, sin daños visibles y libre de polvo.",
+        "details": "Verificar que al jalar la cuerda de vida de detenga por completo la maquina",
+        "images": [
+            "m3_64c3cac3da204b7bbc08f3754927d712.jpg"
+        ]
+    },
+    {
+        "description": "Cilindros de apertura en buen estado, sin daños, ruidos extraños o fugas",
+        "details": "",
+        "images": [
+            "m3_a64ef8b1dff74221864793c3c4745ba5.jpg"
+        ]
+    },
+    {
+        "description": "Revisar la maquina que no existan fugas de aceite en ninguna área de la maquina.",
+        "details": "",
+        "images": [
+            "m3_03d3932d7dca4fb8b94550f21ba4c598.jpg"
+        ]
+    },
+    {
+        "description": "Verificar que el nylamid se encuentre en buenas condiciones",
+        "details": "así como que su tornillería esté completa y en buen estado.",
+        "images": [
+            "m3_84cce9c452894df3b310a6f092a6c249.jpg"
+        ]
+    }
+]

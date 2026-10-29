@@ -162,6 +162,63 @@ let timerInterval = null;
 let paused = false;
 let remainingTime = 0;
 let currentDuration = 0;
+let audioContext = null;
+
+function getAudioContext() {
+    const AudioContextClass =
+        window.AudioContext || window.webkitAudioContext;
+
+    if (!AudioContextClass) {
+        return null;
+    }
+
+    if (!audioContext) {
+        audioContext = new AudioContextClass();
+    }
+
+    return audioContext;
+}
+
+function enableStepAudio() {
+    const context = getAudioContext();
+
+    if (context && context.state === "suspended") {
+        context.resume().catch((error) => {
+            console.error("Could not enable step audio:", error);
+        });
+    }
+}
+
+function playStepSound() {
+    const context = getAudioContext();
+
+    if (!context) {
+        return;
+    }
+
+    const playTone = () => {
+        const oscillator = context.createOscillator();
+        const gain = context.createGain();
+
+        oscillator.frequency.value = 880;
+        gain.gain.value = 0.9;
+
+        oscillator.connect(gain);
+        gain.connect(context.destination);
+
+        oscillator.start();
+        oscillator.stop(context.currentTime + 0.4);
+    };
+
+    if (context.state === "suspended") {
+        context.resume().then(playTone).catch((error) => {
+            console.error("Could not play the step sound:", error);
+        });
+        return;
+    }
+
+    playTone();
+}
 
 function loadStep(index) {
     const step = recipe.steps[index];
@@ -276,6 +333,7 @@ function startTimer(duration) {
 
             clearInterval(timerInterval);
 
+            playStepSound();
             currentStep++;
 
             if (currentStep < recipe.steps.length) {
@@ -304,6 +362,7 @@ function startTimer(duration) {
 document
     .getElementById("pauseButton")
     .addEventListener("click", () => {
+        enableStepAudio();
 
         const button =
             document.getElementById(
@@ -344,6 +403,7 @@ document
             timerInterval
         );
 
+        playStepSound();
         currentStep++;
 
         paused = false;

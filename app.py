@@ -1,4 +1,8 @@
-import RPi.GPIO as GPIO
+try:
+    import RPi.GPIO as GPIO
+except ImportError:
+    GPIO = None
+
 import time
 import threading
 import sqlite3
@@ -9,19 +13,22 @@ from werkzeug.utils import secure_filename
 from flask import Flask, render_template, request, redirect, send_file
 import json
 import os
+import uuid
 from openpyxl import Workbook
 from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
 
 app = Flask(__name__)
-GPIO.setmode(GPIO.BCM)
-
 BLINK_PIN = 18
 
-GPIO.setup(
-	BLINK_PIN,
-	GPIO.OUT,
-	initial=GPIO.HIGH
-)
+if GPIO is not None:
+    GPIO.setmode(GPIO.BCM)
+    GPIO.setup(
+        BLINK_PIN,
+        GPIO.OUT,
+        initial=GPIO.HIGH
+    )
+else:
+    print("RPi.GPIO no disponible; GPIO en modo simulado.")
 
 
 # ----------------------------------
@@ -304,21 +311,25 @@ def player():
 # ----------------------------------
 # Blink
 # ----------------------------------
+def set_blink_led(is_on):
+
+    if GPIO is not None:
+        state = GPIO.LOW if is_on else GPIO.HIGH
+        GPIO.output(BLINK_PIN, state)
+    else:
+        state = "ON" if is_on else "OFF"
+        print(f"GPIO {BLINK_PIN} {state} (simulado)")
+
+
 def blink_led():
 
     for _ in range(1):
 
-        GPIO.output(
-            BLINK_PIN,
-            GPIO.LOW
-        )
+        set_blink_led(is_on=True)
 
         time.sleep(0.7)
 
-        GPIO.output(
-            BLINK_PIN,
-            GPIO.HIGH
-        )
+        set_blink_led(is_on=False)
 
         time.sleep(0.2)
 @app.route("/blink-step")
@@ -333,9 +344,9 @@ def blink_step():
 @app.route("/process-complete")
 def process_complete():
 
-    GPIO.output(BLINK_PIN, GPIO.LOW)
+    set_blink_led(is_on=True)
     time.sleep(1)
-    GPIO.output(BLINK_PIN, GPIO.HIGH)
+    set_blink_led(is_on=False)
 
     return "OK"
 
@@ -344,22 +355,145 @@ def process_complete():
 # TPM
 # ----------------------------------
 
+def tpm_checklist_path(mill):
+    return os.path.join(
+        app.root_path,
+        "recipes",
+        f"tpm_molino_{mill}.json"
+    )
+
+
+def default_tpm_items(mill):
+    if mill != 2:
+        return []
+
+    return [
+        {
+            "description": "Paros de emergencia (12 paros en total) en buen estado, sin daños visibles",
+            "details": "Presionar el paro de emergencia y verificar que la máquina no realice ningún movimiento.",
+            "images": ["M2TPM_1.png"]
+        },
+        {
+            "description": "Barra de emergencia en buen estado, sin daños visibles y libre de polvo",
+            "details": "Presionar la barra de emergencia y verificar que la máquina no realice ningún movimiento. La máquina debe parar sin tener que aplicar una fuerza mayor a 40 lb.",
+            "images": ["M2TPM_2.png"]
+        },
+        {
+            "description": "Bases de cuchillas libres de daños visibles",
+            "details": "",
+            "images": ["M2TPM_3.png"]
+        },
+        {
+            "description": "Balatas en buen estado, sin daños visibles o apertura anormal",
+            "details": "",
+            "images": ["M2TPM_4.png"]
+        },
+        {
+            "description": "Motor en buen estado, sin daños, ruidos extraños y libre de polvo",
+            "details": "",
+            "images": ["M2TPM_5.png"]
+        },
+        {
+            "description": "Llave hidroneumática en buen estado, sin daños visibles y libre de polvo",
+            "details": "",
+            "images": ["M2TPM_6.png"]
+        },
+        {
+            "description": "Panel de control en buen estado, sin daños visibles y libre de polvo",
+            "details": "",
+            "images": ["M2TPM_7.png"]
+        },
+        {
+            "description": "Medidor de temperatura de agua en buen estado, sin daños visibles y libre de polvo",
+            "details": "Verificar que la luz se encuentre en color verde",
+            "images": ["M2TPM_8.png", "M2TPM_8.1.png"]
+        },
+        {
+            "description": "Rodillos en buen estado, sin daños visibles y libre de polvo",
+            "details": "",
+            "images": ["M2TPM_9.png"]
+        },
+        {
+            "description": "Distancia de paro menor o igual a la distancia calculada",
+            "details": "",
+            "images": ["M2TPM_10.png"]
+        },
+        {
+            "description": "Cilindros de apertura en buen estado, sin daños, ruidos extraños o fugas de aceite",
+            "details": "",
+            "images": ["M2TPM_11.png"]
+        },
+        {
+            "description": "Niveles de aceite por arriba de la marca roja. Revisar que no existan fugas de aceite",
+            "details": "",
+            "images": ["M2TPM_12.png", "M2TPM_12.1.png"]
+        },
+        {
+            "description": "Medición de la temperatura de mesa de enfriamiento de 15° a 25°",
+            "details": "",
+            "images": ["M2TPM_13.png"]
+        }
+    ]
+
+
+def load_tpm_items(mill):
+    path = tpm_checklist_path(mill)
+    if not os.path.exists(path):
+        items = default_tpm_items(mill)
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        with open(path, "w", encoding="utf-8") as file:
+            json.dump(items, file, indent=4, ensure_ascii=False)
+        return items
+
+    with open(path, "r", encoding="utf-8") as file:
+        items = json.load(file)
+
+    for item in items:
+        images = item.get("images", [])
+        if isinstance(images, str):
+            images = [images]
+        item["images"] = [
+            image for image in images
+            if isinstance(image, str) and os.path.basename(image) == image
+        ]
+        item.setdefault("details", "")
+
+    return items
+
+
+def render_tpm_checklist(mill, items, selected_statuses=None, form_error=None, status=200):
+    return render_template(
+        "tpm_checklist.html",
+        mill=mill,
+        items=items,
+        selected_statuses=selected_statuses or {},
+        form_error=form_error
+    ), status
+
+
 @app.route("/tpm")
 def tpm():
     with closing(sqlite3.connect(tpm_database_path())) as connection:
-        latest_report = connection.execute("""
-            SELECT report_date, report_time
+        reports = connection.execute("""
+            SELECT machine, report_date, report_time
             FROM tpm_reports
             ORDER BY report_number DESC
-            LIMIT 1
-        """).fetchone()
+        """).fetchall()
 
-    return render_template("tpm.html", latest_report=latest_report)
+    latest_reports = {}
+    for machine, report_date, report_time in reports:
+        latest_reports.setdefault(machine, (report_date, report_time))
+
+    return render_template("tpm.html", latest_reports=latest_reports)
 
 
-@app.route("/tpm-molino-2", methods=["GET", "POST"])
-def tpm_molino_2():
-    item_names = [f"item_{number}" for number in range(1, 14)]
+@app.route("/tpm-molino-<int:mill>", methods=["GET", "POST"])
+def tpm_molino(mill):
+    if mill not in (1, 2, 3):
+        return "Molino no encontrado", 404
+
+    items = load_tpm_items(mill)
+    item_names = [f"item_{number}" for number in range(1, len(items) + 1)]
 
     if request.method == "POST":
         responses = {
@@ -368,12 +502,22 @@ def tpm_molino_2():
         }
         allowed_responses = {"OK", "Not OK"}
 
+        if not items:
+            return render_tpm_checklist(
+                mill,
+                items,
+                form_error="Este TPM todavía no tiene puntos configurados.",
+                status=400
+            )
+
         if any(response not in allowed_responses for response in responses.values()):
-            return render_template(
-                "tpm_molino_2.html",
+            return render_tpm_checklist(
+                mill,
+                items,
                 selected_statuses=responses,
-                form_error="Selecciona OK o Not OK para cada punto antes de enviar."
-            ), 400
+                form_error="Selecciona OK o Not OK para cada punto antes de enviar.",
+                status=400
+            )
 
         ok_count = sum(response == "OK" for response in responses.values())
         not_ok_count = sum(response == "Not OK" for response in responses.values())
@@ -385,7 +529,7 @@ def tpm_molino_2():
                     machine, report_date, report_time, ok_count, not_ok_count, responses_json
                 ) VALUES (?, ?, ?, ?, ?, ?)
             """, (
-                "Molino 2",
+                f"Molino {mill}",
                 now.strftime("%d/%m/%Y"),
                 now.strftime("%H:%M"),
                 ok_count,
@@ -403,7 +547,7 @@ def tpm_molino_2():
 
         return redirect("/tpm")
 
-    return render_template("tpm_molino_2.html", selected_statuses={})
+    return render_tpm_checklist(mill, items)
 
 
 @app.route("/tpm/maintenance-order", methods=["POST"])
@@ -451,9 +595,16 @@ def download_tpm_report():
     worksheet = workbook.active
     worksheet.title = "TPM Reports"
 
+    responses_by_report = [json.loads(report[6]) for report in reports]
+    response_count = max(
+        (len(responses) for responses in responses_by_report),
+        default=13
+    )
+    response_count = max(response_count, 13)
     headers = [
         "N. reporte", "TPM", "Fecha", "Hora", "Resp. OK", "Resp. NOK",
-        *(f"R{number}" for number in range(1, 14)), "Orden de mantenimiento"
+        *(f"R{number}" for number in range(1, response_count + 1)),
+        "Orden de mantenimiento"
     ]
     worksheet.append(headers)
 
@@ -474,8 +625,7 @@ def download_tpm_report():
         cell.alignment = Alignment(horizontal="left")
         cell.border = cell_border
 
-    for report in reports:
-        responses = json.loads(report[6])
+    for report, responses in zip(reports, responses_by_report):
         row = [
             report[0],
             report[1],
@@ -484,8 +634,12 @@ def download_tpm_report():
             report[4],
             report[5],
             *[
-                "ok" if responses.get(f"item_{number}") == "OK" else "nok"
-                for number in range(1, 14)
+                (
+                    "ok" if responses.get(f"item_{number}") == "OK"
+                    else "nok" if responses.get(f"item_{number}") == "Not OK"
+                    else ""
+                )
+                for number in range(1, response_count + 1)
             ],
             report[7]
         ]
@@ -501,13 +655,13 @@ def download_tpm_report():
         worksheet.cell(current_row, 1).number_format = "0000"
         worksheet.cell(current_row, 3).number_format = "DD/MM/YYYY"
         worksheet.cell(current_row, 4).number_format = "HH:MM"
-        for column in range(5, 21):
+        for column in range(5, 7 + response_count):
             worksheet.cell(current_row, column).alignment = Alignment(
                 horizontal="center",
                 vertical="center"
             )
 
-    column_widths = [14, 16, 14, 10, 12, 12] + [8] * 13 + [30]
+    column_widths = [14, 16, 14, 10, 12, 12] + [8] * response_count + [30]
     for column_number, width in enumerate(column_widths, start=1):
         worksheet.column_dimensions[
             worksheet.cell(row=1, column=column_number).column_letter
@@ -534,6 +688,87 @@ def download_tpm_report():
 @app.route("/settings")
 def settings():
     return render_template("settings.html")
+
+
+@app.route("/settings/tpm/<int:mill>", methods=["GET", "POST"])
+def tpm_checklist_editor(mill):
+    if mill not in (1, 2, 3):
+        return "Molino no encontrado", 404
+
+    items = load_tpm_items(mill)
+    error = None
+
+    if request.method == "POST":
+        descriptions = request.form.getlist("description")
+        details = request.form.getlist("details")
+        updated_items = []
+        uploads = []
+
+        for index, description in enumerate(descriptions):
+            description = description.strip()
+            detail = details[index].strip() if index < len(details) else ""
+            if not description:
+                if detail or request.files.getlist(f"images{index}"):
+                    error = "Cada punto con instrucciones o imagen necesita una descripción."
+                    break
+                continue
+
+            existing_images = request.form.getlist(f"existing_image{index}")
+            existing_images = [
+                image for image in existing_images
+                if os.path.basename(image) == image
+            ]
+            remove_images = set(request.form.getlist(f"remove_image{index}"))
+            kept_images = [
+                image for image in existing_images
+                if os.path.basename(image) == image and image not in remove_images
+            ]
+            item_images = list(kept_images)
+
+            for uploaded_file in request.files.getlist(f"images{index}"):
+                if not uploaded_file.filename:
+                    continue
+                extension = os.path.splitext(
+                    secure_filename(uploaded_file.filename)
+                )[1].lower()
+                if extension not in {".png", ".jpg", ".jpeg", ".gif", ".webp"}:
+                    error = "Solo se permiten imágenes PNG, JPG, JPEG, GIF o WEBP."
+                    break
+                filename = f"m{mill}_{uuid.uuid4().hex}{extension}"
+                item_images.append(filename)
+                uploads.append((uploaded_file, filename))
+
+            if error:
+                break
+
+            updated_items.append({
+                "description": description,
+                "details": detail,
+                "images": item_images
+            })
+
+        if error is None:
+            media_directory = os.path.join(
+                app.root_path,
+                "static",
+                "images",
+                "TPM"
+            )
+            os.makedirs(media_directory, exist_ok=True)
+            for uploaded_file, filename in uploads:
+                uploaded_file.save(os.path.join(media_directory, filename))
+
+            with open(tpm_checklist_path(mill), "w", encoding="utf-8") as file:
+                json.dump(updated_items, file, indent=4, ensure_ascii=False)
+
+            return redirect(f"/settings/tpm/{mill}")
+
+    return render_template(
+        "tpm_checklist_editor.html",
+        mill=mill,
+        items=items,
+        error=error
+    ), 400 if error else 200
 
 
 # ----------------------------------

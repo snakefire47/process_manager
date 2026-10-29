@@ -1,6 +1,19 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>Settings</h1>
-<p>Empty page for now</p>
+<div class="container">
+    <h1 class="mb-2">Settings</h1>
+    <p class="text-muted mb-4">Edita los puntos, instrucciones e imágenes de cada checklist TPM.</p>
+
+    <div class="row g-3">
+        {% for mill in range(1, 4) %}
+            <div class="col-md-4">
+                <a href="{{ url_for('tpm_checklist_editor', mill=mill) }}"
+                   class="btn btn-outline-primary w-100 py-4 fs-5 fw-semibold">
+                    Editar TPM Molino {{ mill }}
+                </a>
+            </div>
+        {% endfor %}
+    </div>
+</div>
 {% endblock %}

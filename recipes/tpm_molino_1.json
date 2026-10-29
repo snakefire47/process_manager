@@ -1,0 +1,95 @@
+[
+    {
+        "description": "Paros de emergencia (5 paros en total)  en buen estado",
+        "details": "Presionar el paro de emergencia y verificar que la maquina no realice ningún movimiento",
+        "images": [
+            "m1_09bdebdc43864b0b918e6ec653a67154.png"
+        ]
+    },
+    {
+        "description": "Barra de emergencia  en buen estado, sin daños visibles y libre de polvo",
+        "details": "Presionar la barra de emergencia y verificar que la maquina no realice ningún movimiento, la maquina debe parar sin tener que aplicar una fuerza mayor a 40 lb",
+        "images": [
+            "m1_bfeac2e444114032a646d190603af55b.png"
+        ]
+    },
+    {
+        "description": "Distancia de paro, menor o igual a la distancia calculada",
+        "details": "",
+        "images": [
+            "m1_c368936745c34d62a297da0a11835859.jpg"
+        ]
+    },
+    {
+        "description": "Balatas en buen estado, sin daños visibles o apertura anormal",
+        "details": "",
+        "images": [
+            "m1_1cae6a28b1d943b380230b47f849bfd9.png"
+        ]
+    },
+    {
+        "description": "Motor en buen estado, sin daños, ruidos extraños y libre de polvo",
+        "details": "",
+        "images": [
+            "m1_8e87c254455c45a6b8f88baba03fe3e4.png"
+        ]
+    },
+    {
+        "description": "Niveles de aceite  por arriba de la marca roja",
+        "details": "Revisar que no existan fugas de aceite",
+        "images": [
+            "m1_254c6a602a234dedb67b474b8eb04596.jpg",
+            "m1_bdaa14f680a849dfb38953551089c42e.jpg"
+        ]
+    },
+    {
+        "description": "Panel de control en buen estado, sin daños visibles",
+        "details": "",
+        "images": [
+            "m1_ebbb88eeed9f4ea286a14d306478b331.jpg"
+        ]
+    },
+    {
+        "description": "Medidor de temperatura de agua  en buen estado,",
+        "details": "sin daños visibles y libre de polvo Verificar que la luz se encuentre en color verde",
+        "images": [
+            "m1_38705d60442f4cf28f82cb2f5dcf21ab.jpg",
+            "m1_68a6f4a93ab14b229508b8d64e7a6e73.jpg"
+        ]
+    },
+    {
+        "description": "Rodillos en buen estado, sin daños visibles y libre de polvo",
+        "details": "",
+        "images": [
+            "m1_e06678ae2c1b453a9fa6dbb47eedb6b8.jpg"
+        ]
+    },
+    {
+        "description": "Linea de vida revisar que se encuentre en buen estado, sin daños visibles y libre de polvo.",
+        "details": "Verificar que al jalar la cuerda de vida de detenga por completo la maquina",
+        "images": [
+            "m1_39c8c8f2bcb1481b8a990fb3bf2b2c95.jpg"
+        ]
+    },
+    {
+        "description": "Cilindros de apertura en buen estado, sin daños, ruidos extraños o fugas",
+        "details": "",
+        "images": [
+            "m1_e1e0d935e3dc43c6928dd845600260e7.png"
+        ]
+    },
+    {
+        "description": "Nivel de grasa por arriba de la marca roja Revisar que no tenga fugas de grasa",
+        "details": "",
+        "images": [
+            "m1_5766f7f733314c909dba5f5a8ad48ba0.jpg"
+        ]
+    },
+    {
+        "description": "Verificar que el nylamid se encuentre en buenas condiciones",
+        "details": "así como que su tornillería esté completa y en buen estado.",
+        "images": [
+            "m1_f5c8b1058c724cd7ac95f0cb040b6aad.jpg"
+        ]
+    }
+]
